@@ -19,7 +19,7 @@
             }
         }
         public double Points { get; set; } = 0.0;
-
+        public ICollection<Ticket> Tickets { get; set; }
         public void CalculatePoints(double PurchaseTotalPrice)
         {
             Points += PurchaseTotalPrice * 0.10;

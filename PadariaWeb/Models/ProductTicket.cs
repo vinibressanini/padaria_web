@@ -1,9 +1,16 @@
-﻿namespace PadariaWeb.Models
+﻿using System.Text.Json.Serialization;
+
+namespace PadariaWeb.Models
 {
     public class ProductTicket
     {
-        public int Id { get; set; }
+
+        public int TicketId { get; set; }
+        [JsonIgnore]
+        public Ticket Ticket { get; set; }
+        [JsonIgnore]
         public Product Product { get; set; }
+        public int ProductId { get; set; }
 
         private int _quantity;
         public double ProductCurrentPrice { get; set; }
@@ -18,9 +25,5 @@
             }
         }
 
-        public double Value()
-        {
-            return Product.Price * Quantity;
-        }
     }
 }
