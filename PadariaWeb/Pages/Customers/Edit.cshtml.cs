@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PadariaWeb.Data;
+using PadariaWeb.DTOs;
 using PadariaWeb.Models;
 
-namespace PadariaWeb.Pages.Products
+namespace PadariaWeb.Pages.Customers
 {
     public class EditModel : PageModel
     {
@@ -21,7 +22,7 @@ namespace PadariaWeb.Pages.Products
         }
 
         [BindProperty]
-        public Product Product { get; set; } = default!;
+        public CustomerPostRequestBody LoyalCustomer { get; set; } = new();
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -30,12 +31,14 @@ namespace PadariaWeb.Pages.Products
                 return NotFound();
             }
 
-            var product =  await _context.Product.FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
+            var loyalcustomer =  await _context.Customer.FirstOrDefaultAsync(m => m.Id == id);
+            if (loyalcustomer == null)
             {
                 return NotFound();
             }
-            Product = product;
+            LoyalCustomer.Id = loyalcustomer.Id ;
+            LoyalCustomer.Name = loyalcustomer.Name;
+            LoyalCustomer.Cpf = loyalcustomer.Cpf;
             return Page();
         }
 
@@ -43,8 +46,19 @@ namespace PadariaWeb.Pages.Products
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
 
-            _context.Attach(Product).State = EntityState.Modified;
+            LoyalCustomer customer = new()
+            {
+                Id = LoyalCustomer.Id,
+                Name = LoyalCustomer.Name,
+                Cpf = LoyalCustomer.Cpf,
+            };
+
+            _context.Attach(customer).State = EntityState.Modified;
 
             try
             {
@@ -52,7 +66,7 @@ namespace PadariaWeb.Pages.Products
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ProductExists(Product.Id))
+                if (!LoyalCustomerExists(LoyalCustomer.Id))
                 {
                     return NotFound();
                 }
@@ -65,9 +79,9 @@ namespace PadariaWeb.Pages.Products
             return RedirectToPage("./Index");
         }
 
-        private bool ProductExists(int id)
+        private bool LoyalCustomerExists(int id)
         {
-            return _context.Product.Any(e => e.Id == id);
+            return _context.Customer.Any(e => e.Id == id);
         }
     }
 }

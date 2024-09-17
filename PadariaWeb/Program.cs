@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PadariaWeb.Data;
+using System.Globalization;
 namespace PadariaWeb
 {
     public class Program

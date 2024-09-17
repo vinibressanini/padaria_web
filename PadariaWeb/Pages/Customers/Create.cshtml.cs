@@ -9,7 +9,7 @@ using PadariaWeb.Data;
 using PadariaWeb.DTOs;
 using PadariaWeb.Models;
 
-namespace PadariaWeb.Pages.Products
+namespace PadariaWeb.Pages.Customers
 {
     public class CreateModel : PageModel
     {
@@ -26,26 +26,26 @@ namespace PadariaWeb.Pages.Products
         }
 
         [BindProperty]
-        public ProductPostRequstDTO Product { get; set; } = default!;
+        public CustomerPostRequestBody LoyalCustomer { get; set; } = default!;
 
+        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                Product product = new()
-                {
-                    Name = Product.Name,
-                    Price = Product.Price,
-                };
-
-                _context.Product.Add(product);
-                await _context.SaveChangesAsync();
-
-                return RedirectToPage("./Index");
+                return Page();
             }
 
-            return Page();
+            LoyalCustomer customer = new()
+            {
+                Name = LoyalCustomer.Name,
+                Cpf = LoyalCustomer.Cpf,
+            };
+
+            _context.Customer.Add(customer);
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage("./Index");
         }
     }
 }

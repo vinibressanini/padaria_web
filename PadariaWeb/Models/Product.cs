@@ -22,10 +22,7 @@ namespace PadariaWeb.Models
             {
                 if (value < 0)
                     throw new ArgumentException("Value can't be negative.");
-                else if (value.GetType() != typeof(double))
-                {
-                    throw new ArgumentException("Invalid Data. Please Inform a Number");
-                }
+                
                 this._price = value;
             }
         }

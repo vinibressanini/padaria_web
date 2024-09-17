@@ -6,6 +6,7 @@ namespace PadariaWeb.Models
     public class Ticket
     {
         public int Id { get; set; }
+        [JsonIgnore]
         public ICollection<Product> Products { get; set; }
         public List<ProductTicket> ProductTickets { get; set; }
         [JsonIgnore]
@@ -29,5 +30,6 @@ namespace PadariaWeb.Models
             return ProductTickets.Remove(ticket);
         }
 
+        public double CaulculateTotalPrice() => ProductTickets.Sum(pt => pt.Value());
     }
 }

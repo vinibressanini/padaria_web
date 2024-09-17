@@ -25,5 +25,7 @@ namespace PadariaWeb.Models
             }
         }
 
+        public double Value() => this._quantity * ProductCurrentPrice;
+
     }
 }

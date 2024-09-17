@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PadariaWeb.Data;
+using PadariaWeb.DTOs;
 using PadariaWeb.Models;
 
-namespace PadariaWeb.Pages.Products
+namespace PadariaWeb.Pages.PaymentMethods
 {
     public class EditModel : PageModel
     {
@@ -20,8 +21,10 @@ namespace PadariaWeb.Pages.Products
             _context = context;
         }
 
+
+        
         [BindProperty]
-        public Product Product { get; set; } = default!;
+        public PaymentPostRequestBody PaymentMethod { get; set; } = new();
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -30,12 +33,14 @@ namespace PadariaWeb.Pages.Products
                 return NotFound();
             }
 
-            var product =  await _context.Product.FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
+            var paymentmethod = await _context.PaymenyMethod.FirstOrDefaultAsync(m => m.Id == id);
+            if (paymentmethod == null)
             {
                 return NotFound();
             }
-            Product = product;
+            PaymentMethod.Id = paymentmethod.Id;
+            PaymentMethod.Flag = paymentmethod.Flag;
+            PaymentMethod.Name = paymentmethod.Name;
             return Page();
         }
 
@@ -43,8 +48,19 @@ namespace PadariaWeb.Pages.Products
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
 
-            _context.Attach(Product).State = EntityState.Modified;
+            PaymentMethod paymentmethod = new()
+            {
+                Id = PaymentMethod.Id,
+                Name = PaymentMethod.Name,
+                Flag = PaymentMethod.Flag,
+            };
+
+            _context.Attach(paymentmethod).State = EntityState.Modified;
 
             try
             {
@@ -52,7 +68,7 @@ namespace PadariaWeb.Pages.Products
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ProductExists(Product.Id))
+                if (!PaymentMethodExists(PaymentMethod.Id))
                 {
                     return NotFound();
                 }
@@ -65,9 +81,9 @@ namespace PadariaWeb.Pages.Products
             return RedirectToPage("./Index");
         }
 
-        private bool ProductExists(int id)
+        private bool PaymentMethodExists(int id)
         {
-            return _context.Product.Any(e => e.Id == id);
+            return _context.PaymenyMethod.Any(e => e.Id == id);
         }
     }
 }

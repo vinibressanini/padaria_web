@@ -1,0 +1,26 @@
+﻿@using PadariaWeb.Models
+@model PadariaWeb.Pages.Customers.DetailsModel
+
+@{
+}
+
+@if(Model != null)
+{
+    @foreach (Ticket ticket in Model.LoyalCustomer.Tickets)
+    {
+        <div class="row-cols-4">
+            <div class="card border-dark mb-3" style="max-width: 18rem;">
+                <div class="card-header">@ticket.Customer.Name</div>
+                <div class="card-body text-dark">
+                    @foreach (ProductTicket productTicket in ticket.ProductTickets)
+                    {
+                        var flag = @ticket.PaymentMethod.Flag != null ? @ticket.PaymentMethod.Flag : "";
+                        <p class="card-text">x @productTicket.Quantity | @productTicket.Product.Name | R$ @productTicket.ProductCurrentPrice</p>
+                        <h5 class="card-subtitle">@ticket.PaymentMethod.Name @flag</h5>
+                    }
+                </div>
+                <div class="card-footer bg-transparent border-success">R$ @ticket.CaulculateTotalPrice()</div>
+            </div>
+        </div>
+    }
+}
