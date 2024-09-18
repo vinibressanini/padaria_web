@@ -13,6 +13,7 @@ namespace PadariaWeb.Repositories
             _context = context;
             return;
         }
+        
         public async Task Delete(int id)
         {
             var paymentmethod = await _context.PaymenyMethod.FindAsync(id);

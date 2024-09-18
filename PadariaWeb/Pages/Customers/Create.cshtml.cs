@@ -8,18 +8,15 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using PadariaWeb.Data;
 using PadariaWeb.DTOs;
 using PadariaWeb.Models;
+using PadariaWeb.Repositories;
 
 namespace PadariaWeb.Pages.Customers
 {
     public class CreateModel : PageModel
     {
-        private readonly PadariaWeb.Data.AppDbContext _context;
+        private readonly CustomerRepostory _repo;
 
-        public CreateModel(PadariaWeb.Data.AppDbContext context)
-        {
-            _context = context;
-        }
-
+        public CreateModel(CustomerRepostory repo) => _repo = repo;
         public IActionResult OnGet()
         {
             return Page();
@@ -28,24 +25,28 @@ namespace PadariaWeb.Pages.Customers
         [BindProperty]
         public CustomerPostRequestBody LoyalCustomer { get; set; } = default!;
 
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return Page();
+                try
+                {
+                    LoyalCustomer customer = new()
+                    {
+                        Name = LoyalCustomer.Name,
+                        Cpf = LoyalCustomer.Cpf,
+                    };
+
+                    await _repo.Save(customer);
+
+                    return RedirectToPage("./Index");
+                }
+                catch (Exception ex)
+                {
+                    return Page();
+                }
             }
-
-            LoyalCustomer customer = new()
-            {
-                Name = LoyalCustomer.Name,
-                Cpf = LoyalCustomer.Cpf,
-            };
-
-            _context.Customer.Add(customer);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+            return Page();
         }
     }
 }

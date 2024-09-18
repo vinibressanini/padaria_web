@@ -9,17 +9,14 @@ using Microsoft.EntityFrameworkCore;
 using PadariaWeb.Data;
 using PadariaWeb.DTOs;
 using PadariaWeb.Models;
+using PadariaWeb.Repositories;
 
 namespace PadariaWeb.Pages.Customers
 {
     public class EditModel : PageModel
     {
-        private readonly PadariaWeb.Data.AppDbContext _context;
-
-        public EditModel(PadariaWeb.Data.AppDbContext context)
-        {
-            _context = context;
-        }
+        private readonly CustomerRepostory _repo;
+        public EditModel(CustomerRepostory repo) => _repo = repo;
 
         [BindProperty]
         public CustomerPostRequestBody LoyalCustomer { get; set; } = new();
@@ -31,7 +28,7 @@ namespace PadariaWeb.Pages.Customers
                 return NotFound();
             }
 
-            var loyalcustomer =  await _context.Customer.FirstOrDefaultAsync(m => m.Id == id);
+            var loyalcustomer =  await _repo.GetById((int)id);
             if (loyalcustomer == null)
             {
                 return NotFound();
@@ -42,8 +39,6 @@ namespace PadariaWeb.Pages.Customers
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -58,30 +53,10 @@ namespace PadariaWeb.Pages.Customers
                 Cpf = LoyalCustomer.Cpf,
             };
 
-            _context.Attach(customer).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!LoyalCustomerExists(LoyalCustomer.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _repo.Update(customer);
 
             return RedirectToPage("./Index");
         }
 
-        private bool LoyalCustomerExists(int id)
-        {
-            return _context.Customer.Any(e => e.Id == id);
-        }
     }
 }
