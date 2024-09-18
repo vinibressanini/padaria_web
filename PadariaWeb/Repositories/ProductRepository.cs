@@ -4,22 +4,22 @@ namespace PadariaWeb.Repositories
 {
     public class ProductRepository : IRepository<Product, int>
     {
-        public void Delete(int id)
+        public Task Delete(int id)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Product> GetAll()
+        public Task<IEnumerable<Product>> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public Product GetById(int id)
+        public Task<Product> GetById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Product Save(Product entity)
+        public Task<Product> Save(Product entity)
         {
             throw new NotImplementedException();
         }

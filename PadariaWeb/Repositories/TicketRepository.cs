@@ -4,22 +4,22 @@ namespace PadariaWeb.Repositories
 {
     public class TicketRepository : IRepository<Ticket, int>
     {
-        public void Delete(int id)
+        public Task Delete(int id)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Ticket> GetAll()
+        public Task<IEnumerable<Ticket>> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public Ticket GetById(int id)
+        public Task<Ticket> GetById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Ticket Save(Ticket entity)
+        public Task<Ticket> Save(Ticket entity)
         {
             throw new NotImplementedException();
         }

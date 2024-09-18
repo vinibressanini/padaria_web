@@ -7,17 +7,15 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PadariaWeb.Data;
 using PadariaWeb.Models;
+using PadariaWeb.Repositories;
 
 namespace PadariaWeb.Pages.Customers
 {
     public class DeleteModel : PageModel
     {
-        private readonly PadariaWeb.Data.AppDbContext _context;
+        private readonly CustomerRepostory _repo;
 
-        public DeleteModel(PadariaWeb.Data.AppDbContext context)
-        {
-            _context = context;
-        }
+        public DeleteModel(CustomerRepostory repo) => _repo = repo;
 
         [BindProperty]
         public LoyalCustomer LoyalCustomer { get; set; } = default!;
@@ -29,7 +27,7 @@ namespace PadariaWeb.Pages.Customers
                 return NotFound();
             }
 
-            var loyalcustomer = await _context.Customer.FirstOrDefaultAsync(m => m.Id == id);
+            var loyalcustomer = await _repo.GetById((int)id);
 
             if (loyalcustomer == null)
             {
@@ -49,15 +47,15 @@ namespace PadariaWeb.Pages.Customers
                 return NotFound();
             }
 
-            var loyalcustomer = await _context.Customer.FindAsync(id);
-            if (loyalcustomer != null)
+            try
             {
-                LoyalCustomer = loyalcustomer;
-                _context.Customer.Remove(LoyalCustomer);
-                await _context.SaveChangesAsync();
+                await _repo.Delete((int)id);
+                return RedirectToPage("./Index");
+            } catch (Exception ex)
+            {
+                return NotFound(ex.Message);
             }
 
-            return RedirectToPage("./Index");
         }
     }
 }

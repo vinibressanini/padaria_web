@@ -2,10 +2,10 @@
 {
     public interface IRepository<T,D>
     {
-        T Save(T entity);
-        IEnumerable<T> GetAll();
+        Task<T> Save(T entity);
+        Task<IEnumerable<T>> GetAll();
         T Update(T entity);
-        void Delete(D id);
-        T GetById(D id);
+        Task Delete(D id);
+        Task<T> GetById(D id);
     }
 }

@@ -4,22 +4,22 @@ namespace PadariaWeb.Repositories
 {
     public class PaymentRepository : IRepository<PaymentMethod, int>
     {
-        public void Delete(int id)
+        public Task Delete(int id)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<PaymentMethod> GetAll()
+        public Task<IEnumerable<PaymentMethod>> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public PaymentMethod GetById(int id)
+        public Task<PaymentMethod> GetById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public PaymentMethod Save(PaymentMethod entity)
+        public Task<PaymentMethod> Save(PaymentMethod entity)
         {
             throw new NotImplementedException();
         }
