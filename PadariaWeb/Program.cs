@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PadariaWeb.Data;
+using PadariaWeb.Repositories;
 using System.Globalization;
 namespace PadariaWeb
 {
@@ -14,6 +15,10 @@ namespace PadariaWeb
 
             // Add services to the container.
             builder.Services.AddRazorPages();
+            builder.Services.AddScoped<CustomerRepostory>();
+            builder.Services.AddScoped<ProductRepository>();
+            builder.Services.AddScoped<PaymentRepository>();
+            builder.Services.AddScoped<TicketRepository>();
 
             var app = builder.Build();
 

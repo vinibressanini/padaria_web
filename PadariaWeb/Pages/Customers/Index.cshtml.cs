@@ -7,23 +7,21 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PadariaWeb.Data;
 using PadariaWeb.Models;
+using PadariaWeb.Repositories;
 
 namespace PadariaWeb.Pages.Customers
 {
     public class IndexModel : PageModel
     {
-        private readonly PadariaWeb.Data.AppDbContext _context;
+        private readonly CustomerRepostory _repo;
 
-        public IndexModel(PadariaWeb.Data.AppDbContext context)
-        {
-            _context = context;
-        }
-
+        public IndexModel(CustomerRepostory repo) => _repo = repo;
+       
         public IList<LoyalCustomer> LoyalCustomer { get;set; } = default!;
 
         public async Task OnGetAsync()
         {
-            LoyalCustomer = await _context.Customer.ToListAsync();
+            LoyalCustomer = (List<LoyalCustomer>)await _repo.GetAll();
         }
     }
 }
