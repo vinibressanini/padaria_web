@@ -8,16 +8,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using PadariaWeb.Data;
 using PadariaWeb.DTOs;
 using PadariaWeb.Models;
+using PadariaWeb.Repositories;
 
 namespace PadariaWeb.Pages.Products
 {
     public class CreateModel : PageModel
     {
-        private readonly PadariaWeb.Data.AppDbContext _context;
+        private readonly ProductRepository _productRepository;
 
-        public CreateModel(PadariaWeb.Data.AppDbContext context)
+        public CreateModel(ProductRepository productRepository)
         {
-            _context = context;
+            _productRepository = productRepository;
         }
 
         public IActionResult OnGet()
@@ -30,7 +31,6 @@ namespace PadariaWeb.Pages.Products
 
         public async Task<IActionResult> OnPostAsync()
         {
-
             if (ModelState.IsValid)
             {
                 Product product = new()
@@ -39,8 +39,7 @@ namespace PadariaWeb.Pages.Products
                     Price = Product.Price,
                 };
 
-                _context.Product.Add(product);
-                await _context.SaveChangesAsync();
+                await _productRepository.Save(product); 
 
                 return RedirectToPage("./Index");
             }

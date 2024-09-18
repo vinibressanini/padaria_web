@@ -7,16 +7,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PadariaWeb.Data;
 using PadariaWeb.Models;
+using PadariaWeb.Repositories;
 
 namespace PadariaWeb.Pages.PaymentMethods
 {
     public class DeleteModel : PageModel
     {
-        private readonly PadariaWeb.Data.AppDbContext _context;
+        private readonly PaymentRepository _paymentRepository;
 
-        public DeleteModel(PadariaWeb.Data.AppDbContext context)
+        public DeleteModel(PaymentRepository paymentRepository)
         {
-            _context = context;
+            _paymentRepository = paymentRepository;
         }
 
         [BindProperty]
@@ -29,15 +30,15 @@ namespace PadariaWeb.Pages.PaymentMethods
                 return NotFound();
             }
 
-            var paymentmethod = await _context.PaymenyMethod.FirstOrDefaultAsync(m => m.Id == id);
+            var paymentMethod = await _paymentRepository.GetById(id.Value);
 
-            if (paymentmethod == null)
+            if (paymentMethod == null)
             {
                 return NotFound();
             }
             else
             {
-                PaymentMethod = paymentmethod;
+                PaymentMethod = paymentMethod;
             }
             return Page();
         }
@@ -49,12 +50,10 @@ namespace PadariaWeb.Pages.PaymentMethods
                 return NotFound();
             }
 
-            var paymentmethod = await _context.PaymenyMethod.FindAsync(id);
-            if (paymentmethod != null)
+            var paymentMethod = await _paymentRepository.GetById(id.Value);
+            if (paymentMethod != null)
             {
-                PaymentMethod = paymentmethod;
-                _context.PaymenyMethod.Remove(PaymentMethod);
-                await _context.SaveChangesAsync();
+                await _paymentRepository.Delete(id.Value);
             }
 
             return RedirectToPage("./Index");

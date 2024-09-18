@@ -9,22 +9,23 @@ using Microsoft.EntityFrameworkCore;
 using PadariaWeb.Data;
 using PadariaWeb.DTOs;
 using PadariaWeb.Models;
+using PadariaWeb.Repositories;
 
 namespace PadariaWeb.Pages.PaymentMethods
 {
     public class EditModel : PageModel
     {
-        private readonly PadariaWeb.Data.AppDbContext _context;
+        private readonly PaymentRepository _paymentRepository;
 
-        public EditModel(PadariaWeb.Data.AppDbContext context)
+        public EditModel(PaymentRepository paymentRepository)
         {
-            _context = context;
+            _paymentRepository = paymentRepository;
         }
 
 
-        
+
         [BindProperty]
-        public PaymentPostRequestBody PaymentMethod { get; set; } = new();
+        public PaymentMethod PaymentMethod { get; set; } = new();
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -33,42 +34,28 @@ namespace PadariaWeb.Pages.PaymentMethods
                 return NotFound();
             }
 
-            var paymentmethod = await _context.PaymenyMethod.FirstOrDefaultAsync(m => m.Id == id);
-            if (paymentmethod == null)
+            var paymentMethod = await _paymentRepository.GetById(id.Value);
+
+            if (paymentMethod == null)
             {
                 return NotFound();
             }
-            PaymentMethod.Id = paymentmethod.Id;
-            PaymentMethod.Flag = paymentmethod.Flag;
-            PaymentMethod.Name = paymentmethod.Name;
+            else
+            {
+                PaymentMethod = paymentMethod;
+            }
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            PaymentMethod paymentmethod = new()
-            {
-                Id = PaymentMethod.Id,
-                Name = PaymentMethod.Name,
-                Flag = PaymentMethod.Flag,
-            };
-
-            _context.Attach(paymentmethod).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _paymentRepository.Update(PaymentMethod);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception)
             {
-                if (!PaymentMethodExists(PaymentMethod.Id))
+                if (!await PaymentMethodExists(PaymentMethod.Id))
                 {
                     return NotFound();
                 }
@@ -81,9 +68,10 @@ namespace PadariaWeb.Pages.PaymentMethods
             return RedirectToPage("./Index");
         }
 
-        private bool PaymentMethodExists(int id)
+        private async Task<bool> PaymentMethodExists(int id)
         {
-            return _context.PaymenyMethod.Any(e => e.Id == id);
+            var paymentMethod = await _paymentRepository.GetById(id);
+            return paymentMethod != null;
         }
     }
 }

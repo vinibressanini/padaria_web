@@ -7,16 +7,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PadariaWeb.Data;
 using PadariaWeb.Models;
+using PadariaWeb.Repositories;
 
 namespace PadariaWeb.Pages.Products
 {
     public class DetailsModel : PageModel
     {
-        private readonly PadariaWeb.Data.AppDbContext _context;
+        private readonly ProductRepository _productRepository;
 
-        public DetailsModel(PadariaWeb.Data.AppDbContext context)
+        public DetailsModel(ProductRepository productRepository)
         {
-            _context = context;
+            _productRepository = productRepository;
         }
 
         public Product Product { get; set; } = default!;
@@ -28,7 +29,8 @@ namespace PadariaWeb.Pages.Products
                 return NotFound();
             }
 
-            var product = await _context.Product.FirstOrDefaultAsync(m => m.Id == id);
+            var product = await _productRepository.GetById(id.Value);
+
             if (product == null)
             {
                 return NotFound();
