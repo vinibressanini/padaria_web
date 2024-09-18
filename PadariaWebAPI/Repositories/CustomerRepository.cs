@@ -37,5 +37,10 @@ namespace PadariaWebAPI.Repositories
 
             
         }
+
+        public async Task<LoyalCustomer?> GetCustomerPoints(int id)
+        {
+            return await _dbContext.Customer.FirstOrDefaultAsync(c => c.Id == id);
+        }
     }
 }

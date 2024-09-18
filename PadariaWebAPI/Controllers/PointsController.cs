@@ -31,5 +31,14 @@ namespace PadariaWebAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet]
+        public async Task<ActionResult<LoyalCustomer>> Get([FromQuery] int id)
+        {
+            LoyalCustomer? customer = await _repo.GetCustomerPoints(id);
+
+            if (customer == null) return NotFound("User Not Found");
+            return Ok(customer);
+        }
     }
 }
