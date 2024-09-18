@@ -1,0 +1,76 @@
+﻿@page
+@model PadariaWeb.Pages.Tickets.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Ticket</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4"> 
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="form-group">
+                <label asp-for="Ticket.Customer.Cpf" class="control-label"></label>
+                <input asp-for="Ticket.Customer.Cpf" class="form-control"/>
+                <span asp-validation-for="Ticket.Customer.Cpf" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Ticket.PaymentMethod" class="control-label"></label>
+                <select asp-for="Ticket.PaymentMethod" class ="form-control" asp-items="ViewBag.PaymentMethod"></select>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="control-label">Produtos</label>
+                        <select id="products" class="form-control" asp-items="ViewBag.Products"></select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="control-label">Quantidade</label>
+                        <input id="quantity" type="number" class="form-control" />
+                        <span class="text-danger"></span>
+                    </div>
+                </div>
+                <input type="button" id="add-product" value="Add" class="btn btn-primary"/>
+                
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        console.log("Hello from Jquery")
+        const productsTicket = []
+
+        $('#add-product').on('click', _ => {
+            const prodId = $('#products').val()
+            const quant = $('#quantity').val()
+            console.log(quant)
+            productsTicket.push({
+                product: prodId,
+                quantity: quant
+            })
+
+            console.log(productsTicket)
+        })
+    })
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
