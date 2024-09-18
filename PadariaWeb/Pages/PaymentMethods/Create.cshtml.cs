@@ -8,16 +8,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using PadariaWeb.Data;
 using PadariaWeb.DTOs;
 using PadariaWeb.Models;
+using PadariaWeb.Repositories;
 
 namespace PadariaWeb.Pages.PaymentMethods
 {
     public class CreateModel : PageModel
     {
-        private readonly PadariaWeb.Data.AppDbContext _context;
+        private readonly PaymentRepository _paymentRepository;
 
-        public CreateModel(PadariaWeb.Data.AppDbContext context)
+        public CreateModel(PaymentRepository paymentRepository)
         {
-            _context = context;
+            _paymentRepository = paymentRepository;
         }
 
         public IActionResult OnGet()
@@ -28,24 +29,22 @@ namespace PadariaWeb.Pages.PaymentMethods
         [BindProperty]
         public PaymentPostRequestBody PaymentMethod { get; set; } = default!;
 
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return Page();
+                PaymentMethod paymentMethod = new()
+                {
+                    Name = PaymentMethod.Name,
+                    Flag = PaymentMethod.Flag,
+                };
+
+                await _paymentRepository.Save(paymentMethod);
+
+                return RedirectToPage("./Index");
             }
 
-            PaymentMethod paymentMenthod = new()
-            {
-                Name = PaymentMethod.Name,
-                Flag = PaymentMethod.Flag
-            };
-
-            _context.PaymenyMethod.Add(paymentMenthod);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+            return Page();
         }
     }
 }

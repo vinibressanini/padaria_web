@@ -1,32 +1,66 @@
-﻿using PadariaWeb.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using PadariaWeb.Data;
+using PadariaWeb.Models;
 
 namespace PadariaWeb.Repositories
 {
     public class PaymentRepository : IRepository<PaymentMethod, int>
     {
-        public Task Delete(int id)
+        private readonly AppDbContext _context;
+
+        public PaymentRepository(AppDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+            return;
+        }
+        
+        public async Task Delete(int id)
+        {
+            var paymentmethod = await _context.PaymenyMethod.FindAsync(id);
+            if (paymentmethod != null)
+            {
+                _context.PaymenyMethod.Remove(paymentmethod);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new Exception("Payment method not found.");
+            }
         }
 
-        public Task<IEnumerable<PaymentMethod>> GetAll()
+        public async Task<IEnumerable<PaymentMethod>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _context.PaymenyMethod.ToListAsync();
         }
 
-        public Task<PaymentMethod> GetById(int id)
+        public async Task<PaymentMethod> GetById(int id)
         {
-            throw new NotImplementedException();
+            var paymentmethod = await _context.PaymenyMethod.FindAsync(id);
+            if (paymentmethod == null)
+            {
+                throw new Exception("Payment method not found.");
+            }
+            return paymentmethod;
         }
 
-        public Task<PaymentMethod> Save(PaymentMethod entity)
+        public async Task<PaymentMethod> Save(PaymentMethod entity)
         {
-            throw new NotImplementedException();
+            await _context.PaymenyMethod.AddAsync(entity);
+            await _context.SaveChangesAsync();
+            return entity;
         }
 
-        public PaymentMethod Update(PaymentMethod entity)
+        public async Task<PaymentMethod> Update(PaymentMethod entity)
         {
-            throw new NotImplementedException();
+            var existingPaymentMethod = await _context.PaymenyMethod.FindAsync(entity.Id);
+            if (existingPaymentMethod == null)
+            {
+                throw new Exception("Payment method not found.");
+            }
+
+            _context.Entry(existingPaymentMethod).CurrentValues.SetValues(entity);
+            await _context.SaveChangesAsync();
+            return existingPaymentMethod;
         }
     }
 }

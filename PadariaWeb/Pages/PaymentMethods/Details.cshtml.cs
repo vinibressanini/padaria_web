@@ -7,16 +7,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PadariaWeb.Data;
 using PadariaWeb.Models;
+using PadariaWeb.Repositories;
 
 namespace PadariaWeb.Pages.PaymentMethods
 {
     public class DetailsModel : PageModel
     {
-        private readonly PadariaWeb.Data.AppDbContext _context;
+        private readonly PaymentRepository _paymentRepository;
 
-        public DetailsModel(PadariaWeb.Data.AppDbContext context)
+        public DetailsModel(PaymentRepository paymentRepository)
         {
-            _context = context;
+            _paymentRepository = paymentRepository;
         }
 
         public PaymentMethod PaymentMethod { get; set; } = default!;
@@ -28,14 +29,15 @@ namespace PadariaWeb.Pages.PaymentMethods
                 return NotFound();
             }
 
-            var paymentmethod = await _context.PaymenyMethod.FirstOrDefaultAsync(m => m.Id == id);
-            if (paymentmethod == null)
+            var paymentMethod = await _paymentRepository.GetById(id.Value);
+
+            if (paymentMethod == null)
             {
                 return NotFound();
             }
             else
             {
-                PaymentMethod = paymentmethod;
+                PaymentMethod = paymentMethod;
             }
             return Page();
         }

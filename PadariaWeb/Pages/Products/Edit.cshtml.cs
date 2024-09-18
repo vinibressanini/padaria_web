@@ -7,52 +7,66 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PadariaWeb.Data;
+using PadariaWeb.DTOs;
 using PadariaWeb.Models;
+using PadariaWeb.Repositories;
 
 namespace PadariaWeb.Pages.Products
 {
     public class EditModel : PageModel
     {
-        private readonly PadariaWeb.Data.AppDbContext _context;
+        private readonly ProductRepository _productRepository;
 
-        public EditModel(PadariaWeb.Data.AppDbContext context)
+        public EditModel(ProductRepository productRepository)
         {
-            _context = context;
+            _productRepository = productRepository;
         }
 
         [BindProperty]
-        public Product Product { get; set; } = default!;
+        public ProductPostRequstDTO Product { get; set; } = new();
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
             if (id == null)
             {
                 return NotFound();
             }
 
-            var product =  await _context.Product.FirstOrDefaultAsync(m => m.Id == id);
+            var product = await _productRepository.GetById(id.Value);
+
             if (product == null)
             {
                 return NotFound();
             }
-            Product = product;
+            else
+            {
+                Product.Id = product.Id;
+                Product.Name = product.Name;
+                Product.Price = product.Price;
+            }
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-
-            _context.Attach(Product).State = EntityState.Modified;
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
 
             try
             {
-                await _context.SaveChangesAsync();
+                Product product = new() { Id = Product.Id, Name = Product.Name, Price = Product.Price };
+                await _productRepository.Update(product);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception)
             {
-                if (!ProductExists(Product.Id))
+                if (!await ProductExists(Product.Id))
                 {
                     return NotFound();
                 }
@@ -65,9 +79,10 @@ namespace PadariaWeb.Pages.Products
             return RedirectToPage("./Index");
         }
 
-        private bool ProductExists(int id)
+        private async Task<bool> ProductExists(int id)
         {
-            return _context.Product.Any(e => e.Id == id);
+            var product = await _productRepository.GetById(id);
+            return product != null;
         }
     }
 }

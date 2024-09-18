@@ -7,16 +7,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PadariaWeb.Data;
 using PadariaWeb.Models;
+using PadariaWeb.Repositories;
 
 namespace PadariaWeb.Pages.Products
 {
     public class DeleteModel : PageModel
     {
-        private readonly PadariaWeb.Data.AppDbContext _context;
+        private readonly ProductRepository _productRepository;
 
-        public DeleteModel(PadariaWeb.Data.AppDbContext context)
+        public DeleteModel(ProductRepository productRepository)
         {
-            _context = context;
+            _productRepository = productRepository;
         }
 
         [BindProperty]
@@ -29,7 +30,7 @@ namespace PadariaWeb.Pages.Products
                 return NotFound();
             }
 
-            var product = await _context.Product.FirstOrDefaultAsync(m => m.Id == id);
+            var product = await _productRepository.GetById(id.Value);
 
             if (product == null)
             {
@@ -49,12 +50,10 @@ namespace PadariaWeb.Pages.Products
                 return NotFound();
             }
 
-            var product = await _context.Product.FindAsync(id);
+            var product = await _productRepository.GetById(id.Value);
             if (product != null)
             {
-                Product = product;
-                _context.Product.Remove(Product);
-                await _context.SaveChangesAsync();
+                await _productRepository.Delete(id.Value);
             }
 
             return RedirectToPage("./Index");
