@@ -1,4 +1,8 @@
 
+using Microsoft.EntityFrameworkCore;
+using PadariaWebAPI.Data;
+using PadariaWebAPI.Repositories;
+
 namespace PadariaWebAPI
 {
     public class Program
@@ -13,7 +17,10 @@ namespace PadariaWebAPI
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(builder.Configuration
+                .GetConnectionString("AppDbContext") ?? throw new InvalidOperationException("Connection string 'AppDbContext' not found.")));
+            builder.Services.AddScoped<CustomerRepository>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
