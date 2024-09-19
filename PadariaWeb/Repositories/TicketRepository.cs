@@ -58,13 +58,13 @@ namespace PadariaWeb.Repositories
             }
         }
 
-        public Ticket Update(Ticket entity)
+        public async Task<Ticket> Update(Ticket entity)
         {
             _dbContext.Attach(entity).State = EntityState.Modified;
 
             try
             {
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {

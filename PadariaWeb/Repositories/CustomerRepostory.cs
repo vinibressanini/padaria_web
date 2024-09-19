@@ -55,13 +55,13 @@ namespace PadariaWeb.Repositories
 
         }
 
-        public LoyalCustomer Update(LoyalCustomer entity)
+        public async Task<LoyalCustomer> Update(LoyalCustomer entity)
         {
             _dbContext.Attach(entity).State = EntityState.Modified;
 
             try
             {
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
