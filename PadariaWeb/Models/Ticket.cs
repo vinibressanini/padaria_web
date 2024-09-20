@@ -6,8 +6,7 @@ namespace PadariaWeb.Models
     public class Ticket
     {
         public int Id { get; set; }
-        [JsonIgnore]
-        public ICollection<Product> Products { get; set; }
+        
         public List<ProductTicket> ProductTickets { get; set; }
         [JsonIgnore]
         public int CustomerId { get; set; }

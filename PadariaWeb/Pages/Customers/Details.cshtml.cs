@@ -33,8 +33,6 @@ namespace PadariaWeb.Pages.Customers
                 .Include(c => c.Tickets)
                 .ThenInclude(tic => tic.ProductTickets)
                 .Include(c => c.Tickets)
-                .ThenInclude(tic => tic.Products)
-                .Include(c => c.Tickets)
                 .ThenInclude(tic => tic.PaymentMethod)
                 .FirstOrDefaultAsync(c => c.Id == id);
 

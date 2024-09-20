@@ -4,12 +4,12 @@ namespace PadariaWeb.Models
 {
     public class ProductTicket
     {
-
-        public int TicketId { get; set; }
+	
+		public int TicketId { get; set; }
         [JsonIgnore]
         public Ticket Ticket { get; set; }
         [JsonIgnore]
-        public Product Product { get; set; }
+		public Product Product { get; set; }
         public int ProductId { get; set; }
 
         private int _quantity;

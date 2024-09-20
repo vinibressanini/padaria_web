@@ -32,7 +32,7 @@ namespace PadariaWeb.Pages.Tickets
         public Ticket Ticket { get; set; } = default!;
 
         [BindProperty]
-        public int Quantity { get; set; }
+        public List<ProductTicket> ProductTickets { get; set; } = new List<ProductTicket>();
 
 
 
@@ -51,13 +51,28 @@ namespace PadariaWeb.Pages.Tickets
 
             Ticket.Customer = customer;
 
-            
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+					_context.Ticket.Add(Ticket);
+					await _context.SaveChangesAsync();
 
-
-            _context.Ticket.Add(Ticket);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+					foreach (var pt in ProductTickets)
+					{
+						pt.TicketId = Ticket.Id;
+						_context.ProductTicket.Add(pt);
+					}
+					await _context.SaveChangesAsync();
+					await transaction.CommitAsync();
+					return RedirectToPage("./Index");
+				}
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+					return Page();
+				}
+            }
         }
     }
 }
