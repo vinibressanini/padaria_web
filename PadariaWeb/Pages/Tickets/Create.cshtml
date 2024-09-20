@@ -1,0 +1,149 @@
+﻿@page
+@model PadariaWeb.Pages.Tickets.CreateModel
+
+@{
+	ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Ticket</h4>
+<hr />
+<div class="row">
+	<div class="col-md-12">
+		<form method="post" class="row">
+			<div class="col-sm-6">
+				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+				<div class="form-group">
+					<label asp-for="Ticket.Customer.Cpf" class="control-label"></label>
+					<input asp-for="Ticket.Customer.Cpf" class="form-control" />
+					<span asp-validation-for="Ticket.Customer.Cpf" class="text-danger"></span>
+				</div>
+				<div class="form-group">
+					<label asp-for="Ticket.PaymentMethod" class="control-label"></label>
+					<select asp-for="Ticket.PaymentMethodId" class="form-control" asp-items="ViewBag.PaymentMethod"></select>
+				</div>
+				<div class="form-group">
+					<div class="row">
+						<div class="col-md-6">
+							<label class="control-label">Produtos</label>
+							<select id="products" class="form-control" asp-items="ViewBag.Products"></select>
+						</div>
+
+						<div class="col-md-6">
+							<label class="control-label">Quantidade</label>
+							<input id="quantity" type="number" class="form-control" />
+							<span class="text-danger"></span>
+						</div>
+					</div>
+					<input type="button" id="add-product" value="Add" class="btn btn-primary mb-2 mt-2" />
+
+				</div>
+
+				<div class="form-group">
+					<input type="submit" value="Create" class="btn btn-primary" />
+				</div>
+				
+				<div id="prodList">
+				</div>
+				
+			</div>
+			<div class="col-sm-6">
+				<h5 class="mb-1">Products List</h5>
+				<table class="table table-bordered table-striped">
+					<thead class="table-dark">
+						<tr>
+							<th>Name</th>
+							<th>Quantity</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+
+		</form>
+	</div>
+</div>
+
+<div>
+	<a asp-page="Index">Back to List</a>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script>
+	let prodTicketIndex = @Model.ProductTickets.Count;
+	console.log(`Tamanho de ProductTickets: ${prodTicketIndex}`)
+
+	$(document).ready(function () {
+		console.log("Hello from Jquery")
+		let productsTicket = []
+		const prodList = $('#prodList')
+		const table = $('tbody')
+
+		$('#add-product').on('click', _ => {
+			const prodId = $('#products').val()
+			const prodName = $('#products option:selected').text()
+			const quant = $('#quantity').val()
+			console.log(quant)
+			productsTicket.push({
+				product: prodId,
+				quantity: quant
+			})
+			const newProdTicket = `
+									<input type="hidden" name="ProductTickets[${productsTicket.length-1}].ProductId" value="${prodId}" />
+										<input type="hidden" name="ProductTickets[${productsTicket.length - 1}].Quantity" value="${quant}" />
+						`
+
+			prodList.append(newProdTicket)
+
+			const tableProduct = `
+					<tr id="prod-${prodId}" data-index="${productsTicket.length - 1}">
+						<td>${prodName}</td>
+						<td>${quant}</td>
+						<td>
+								<button type="button" class="btn btn-danger delete-row" data-index="${productsTicket.length - 1}"> Delete </button>
+						</td>
+					</tr>
+				`
+			table.append(tableProduct)
+		})
+
+		$(document).on('click', 'button.delete-row', function() {
+			const prodIndex = $(this).data('index')
+			$(this).closest('tr').remove()
+			productsTicket.splice(prodIndex, 1)
+
+			updateInputs()
+			updateRows()
+		})
+
+		function updateInputs(){
+			prodList.empty()
+			$.each(productsTicket, function (index, obj) {
+				const newProdTicket = `
+								<input type="hidden" name="ProductTickets[${index}].ProductId" value="${obj.product}" />
+								<input type="hidden" name="ProductTickets[${index}].Quantity" value="${obj.quantity}" />
+					`
+
+				prodList.append(newProdTicket)
+			})
+		}
+
+		function updateRows() {
+			$('tbody tr').each(function (index) {
+				$(this).attr('data-index', index)
+				$(this).find('.delete-row').attr('data-index', index)
+			})
+		}
+	})
+</script>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

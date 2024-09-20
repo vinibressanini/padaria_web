@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using PadariaWeb.Data;
 using PadariaWeb.Models;
 
-namespace PadariaWeb.Pages.Customers
+namespace PadariaWeb.Pages.Tickets
 {
     public class DetailsModel : PageModel
     {
@@ -19,8 +19,7 @@ namespace PadariaWeb.Pages.Customers
             _context = context;
         }
 
-        [BindProperty]
-        public LoyalCustomer LoyalCustomer { get; set; } = default!;
+        public Ticket Ticket { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -29,24 +28,16 @@ namespace PadariaWeb.Pages.Customers
                 return NotFound();
             }
 
-            var loyalcustomer = await _context.Customer
-                .Include(c => c.Tickets)
-                .ThenInclude(tic => tic.ProductTickets)
-                .Include(c => c.Tickets)
-                .ThenInclude(tic => tic.PaymentMethod)
-                .FirstOrDefaultAsync(c => c.Id == id);
-
-            if (loyalcustomer == null)
+            var ticket = await _context.Ticket.FirstOrDefaultAsync(m => m.Id == id);
+            if (ticket == null)
             {
                 return NotFound();
             }
             else
             {
-                LoyalCustomer = loyalcustomer;
+                Ticket = ticket;
             }
             return Page();
         }
-
-
     }
 }

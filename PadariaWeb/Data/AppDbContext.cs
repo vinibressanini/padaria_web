@@ -24,10 +24,6 @@ namespace PadariaWeb.Data
                 .WithOne(x => x.Ticket)
                 .HasForeignKey(x => x.TicketId);
 
-            modelBuilder.Entity<Ticket>()
-                .HasMany(e => e.Products)
-                .WithMany(e => e.Tickets)
-                .UsingEntity<ProductTicket>();
 
             //l => l.HasOne(typeof(Tag)).WithMany().HasForeignKey("TagsId").HasPrincipalKey(nameof(Tag.Id)),
             //r => r.HasOne(typeof(Post)).WithMany().HasForeignKey("PostsId").HasPrincipalKey(nameof(Post.Id))
@@ -42,7 +38,11 @@ namespace PadariaWeb.Data
                 .WithMany(x => x.Tickets)
                 .HasForeignKey(x => x.PaymentMethodId);
 
-            base.OnModelCreating(modelBuilder);
+			modelBuilder.Entity<ProductTicket>()
+			.HasKey(pt => new { pt.TicketId, pt.ProductId });
+
+
+			base.OnModelCreating(modelBuilder);
 
         }
 
